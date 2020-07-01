@@ -21,7 +21,8 @@ import com.cognizant.movieservice.service.MovieServiceImpl;
 
 
 @RestController
-@RequestMapping(value="/movie")
+@RequestMapping(value="/movie",produces = MediaType.APPLICATION_JSON)
+
 public class MovieController {
 
 	@Autowired
