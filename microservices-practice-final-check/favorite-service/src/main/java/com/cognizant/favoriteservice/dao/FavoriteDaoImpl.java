@@ -47,9 +47,9 @@ public class FavoriteDaoImpl implements FavoriteDao {
 	public ArrayList<Movie> getAllFavoriteMovies(int userId) {
 		log.debug("START");
 
-		if (favoriteRepository.findUserIdCount(userId) == 0) {
-			return null;
-		}
+		//if (favoriteRepository.findUserIdCount(userId) == 0) {
+		//	return null;
+		//}
 
 		ArrayList<Favorite> favoriteList = favoriteRepository.findByUserId(userId);
 		ArrayList<Movie> movieList = new ArrayList<>();

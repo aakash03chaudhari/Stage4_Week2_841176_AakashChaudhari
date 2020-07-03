@@ -1,1 +1,0 @@
-Eureka + Zuul + Employee Micro-Service + JWT + Docker

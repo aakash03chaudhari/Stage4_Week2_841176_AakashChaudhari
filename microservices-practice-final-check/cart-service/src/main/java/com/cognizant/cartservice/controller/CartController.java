@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cognizant.cartservice.exception.MenuItemNotFoundException;
 import com.cognizant.cartservice.model.MenuItem;
 import com.cognizant.cartservice.service.CartServiceImpl;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,11 +40,12 @@ public class CartController {
 
 	//fetch all the cart items of existing users
 	@GetMapping(value="/{userId}", produces = MediaType.APPLICATION_JSON)
+	@HystrixCommand(fallbackMethod = "fallbackgetAllCartItems")
 	public ArrayList<MenuItem> getAllCartItems(@PathVariable("userId") int userId) {
 		log.info("START");
 		return cartServiceImpl.getAllCartItems(userId);
 	}
-
+	
 	//Delete item from users cart
 	@DeleteMapping("/{userId}/{menuItemId}")
 	public void deleteCartItems(@PathVariable("userId") int userId, @PathVariable("menuItemId") int menuItemId) {
@@ -52,4 +54,25 @@ public class CartController {
 		log.debug("END");
 	}
 
+	
+	//fallback method for getAllCartItems
+	public ArrayList<MenuItem> fallbackgetAllCartItems(@PathVariable("userId") int userId) {
+		log.info("Start Fallback");
+		MenuItem menuItem = new MenuItem();
+		menuItem.setId(0);
+		menuItem.setActive(false);
+		menuItem.setCategory("default");
+		menuItem.setDateOfLaunch(null);
+		menuItem.setFreeDelivery(false);
+		menuItem.setName("Default Item");
+		menuItem.setPrice(0);
+		log.debug("MenuItem Service is Down");
+		ArrayList<MenuItem> returnList = new ArrayList<MenuItem>();
+		returnList.add(menuItem);
+		return returnList;
+		
+	}
+	
+
 }
+
