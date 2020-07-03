@@ -15,7 +15,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
-	
+
 	@Override
 	public Employee getEmployeeById(int emp_id) {
 		// TODO Auto-generated method stub
@@ -27,12 +27,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	public Employee updateEmployeeDetails(int emp_id, Employee employee) {
 		// TODO Auto-generated method stub
 		Employee employeeFound = employeeRepository.findById(emp_id).orElseThrow(() -> {throw new EmployeeNotFoundException();});
-		
+
 		employeeFound.setName(employee.getName());
 		employeeFound.setPermanent(employee.isPermanent());
 		employeeFound.setDateOfBirth(employee.getDateOfBirth());
 		employeeFound.setSalary(employee.getSalary());
-		
+		employeeRepository.save(employeeFound);
 		return employeeFound;
 	}
 
@@ -40,14 +40,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	public Employee addEmployee(Employee employee) {
 		// TODO Auto-generated method stub
 		Employee emplyeeAdded = employeeRepository.save(employee);
-		
+
 		return emplyeeAdded;
 	}
 
 	@Override
 	public void deleteEmployee(int emp_id) {
 		// TODO Auto-generated method stub
-		
+
 		Employee employeeFound = employeeRepository.findById(emp_id).orElseThrow(() -> {throw new EmployeeNotFoundException();});
 		employeeRepository.delete(employeeFound);
 	}
@@ -56,7 +56,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	public List<Employee> getAllEmployees() {
 		// TODO Auto-generated method stub
 		List<Employee> listOfEmployees = employeeRepository.findAll();
-		
+
 		return listOfEmployees;
 	}
 
