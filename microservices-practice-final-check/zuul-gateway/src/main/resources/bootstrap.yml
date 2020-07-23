@@ -1,0 +1,13 @@
+spring:
+    application:
+        name: zuul-service
+    cloud:
+        config:
+            fail-fast: true
+            retry:
+                maxAttempts: 20
+                maxInterval: 10000
+            uri: http://spring-cloud-config-server:8888
+            
+    
+            

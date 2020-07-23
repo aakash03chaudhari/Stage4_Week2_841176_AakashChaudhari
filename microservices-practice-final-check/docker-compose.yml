@@ -1,0 +1,125 @@
+version: "3.6"
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysqldb
+    ports:
+      - 3300:3300
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=root
+    networks:
+      - truyum-nw
+      - movie-cruiser-nw
+    volumes:
+      - './mysqldb:/var/lib/mysql'
+      - './dbscripts:/docker-entrypoint-initdb.d'
+  config-server:
+    image: spring-cloud-config-server
+    build: ./spring-cloud-config-server
+    container_name: spring-cloud-config-server
+    ports:
+      - 8888:8888
+    networks:
+      - truyum-nw
+      - movie-cruiser-nw
+  eureka:
+    image: eureka-server
+    build: ./eureka-discovery-service
+    container_name: eureka-server
+    ports:
+      - 8761:8761
+   
+    depends_on:
+      - config-server
+      - db
+    
+    networks:
+      - truyum-nw
+      - movie-cruiser-nw
+  zuul:
+    image: zuul-service
+    build: ./zuul-gateway
+    container_name: zuul-service
+    ports:
+      - 8762:8762
+    depends_on:
+      - config-server
+      - eureka
+    networks:
+      - truyum-nw
+      - movie-cruiser-nw
+  auth-service:
+    image: authentication-service
+    build: ./authentication-service
+    container_name: authentication-service
+    ports:
+      - 8763:8763
+    depends_on:
+      - config-server
+      - eureka
+    networks:
+      - truyum-nw
+      - movie-cruiser-nw
+  menu-item-service:
+    image: menu-item-service
+    build: ./menuitem-service
+    container_name: menu-item-service
+    ports:
+      - 8766:8766
+    depends_on:
+      - config-server
+      - db
+      - eureka
+      - zuul
+      - auth-service
+    networks:
+      - truyum-nw
+  cart-service:
+    image: cart-service
+    build: ./cart-service
+    container_name: cart-service
+    ports:
+      - 8767:8767
+    depends_on:
+      - eureka      
+      - zuul
+      - db
+      - menu-item-service
+      - auth-service
+    networks:
+      - truyum-nw
+  
+  movie-service:
+    image: movie-service
+    build: ./movie-service
+    container_name: movie-service
+    ports:
+      - 8764:8764
+    depends_on:
+      - config-server
+      - db
+      - eureka
+      - zuul
+      - auth-service
+    networks:
+      - movie-cruiser-nw
+  favorite-service:
+    image: favorite-service
+    build: ./favorite-service
+    container_name: favorite-service
+    ports:
+      - 8765:8765
+    depends_on:
+      - eureka      
+      - zuul
+      - db
+      - menu-item-service
+      - auth-service
+    networks:
+      - movie-cruiser-nw    
+networks:
+  truyum-nw:
+    name: truyum-nw
+  movie-cruiser-nw:
+    name: movie-cruiser-nw
